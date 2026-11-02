@@ -12,7 +12,7 @@
     <h1>Le Coach</h1>
 
     {% image page.photo fill-900x700 class="image-page" alt="Mon coach" %}
-    <img src="{% static "images/coach.png" %}" alt="Image du coach et d'un élève" class="image-page">
+    <img src="{% static "images/coach.png" %}" class="image-page" alt="Image du coach et d'un élève" class="image-page">
     <p>
         Je m'appelle Max, coach sportif depuis plus de dix ans. J'ai accompagné
         des dizaines de personnes dans leur remise en forme, en adaptant chaque
@@ -24,21 +24,33 @@
         jamais avec un programme tout fait.
     </p>
 
-        <h2>Nos coachs</h2>
-        <ul>
-            {% for coach in coachs_list %}
-                <li>
-                    {{ coach.prenom }} - {{ coach.cours }}
-                    {% if coach.presence %}
-                        Présent
-                    {% else %}
-                        Absent
-                    {% endif %}
-                </li>
+       <h2>Nos coachs</h2>
+
+{% for coach in coachs_list %}
+    <div class="coach-card">
+
+        {% if coach.photo %}
+            {% image coach.photo fill-300x300 class="image-page" alt=coach.prenom %}
+        {% endif %}
+
+        <h3>{{ coach.prenom }}</h3>
+
+        <p>{{ coach.presentation }}</p>
+
+        <p><strong>Cours :</strong>
+            {% for cours in coach.cours.all %}
+                {{ cours.nom }}{% if not forloop.last %}, {% endif %}
             {% empty %}
-                <li>Aucun coach pour le moment.</li>
+                Aucun cours
             {% endfor %}
-            </ul>
+        </p>
+
+        <p><strong>Présent le :</strong> {{ coach.jours_presence }}</p>
+
+    </div>
+{% empty %}
+    <p>Aucun coach pour le moment.</p>
+{% endfor %}
 </div>
 
 {% endblock content %}
