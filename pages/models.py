@@ -104,3 +104,41 @@ class ContactPage(AbstractEmailForm):
         FieldPanel("from_address"),  # l'adresse "expediteur" affichee sur l'email recu
         FieldPanel("subject"),       # le sujet de l'email envoye
     ]
+
+class CoachsIndexPage(Page):
+    intro = RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("intro")
+    ]
+
+    # sous cette page ne poura être ajouter que des fiches de coach
+    subpage_types = ["pages.CoachProfilPage"]
+
+    # va les chercher dans la page coach profil page (pas encore créé) pour les afficher
+
+    def get_context(self, request):
+        context = super().get_context(request)
+        context["coachs"] = CoachProfilPage.objects.child_of(self).live()
+
+        return context 
+
+class CoachProfilPage(Page):
+    nom = models.CharField(max_length=100, blank=True)
+    specialite = models.CharField(max_length=50)
+    photo = models.ForeignKey(
+        "wagtailimages.Image",
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name="+"
+    )
+    bio = RichTextField(blank=True)
+
+    content_panels = Page.content_panels + [
+        FieldPanel("nom"),
+        FieldPanel("specialite"),
+        FieldPanel("photo"),
+        FieldPanel("bio")
+    ]
+
+    parent_page_types = ["pages.CoachsIndexPage"]
